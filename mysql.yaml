@@ -50,13 +50,13 @@ spec:
       containers:
       # deploys MySQL from the default Docker Hub image
       # https://hub.docker.com/_/mysql/
-      - image: mysql
+      - image: mysql:5.6
         name: mysql
         # reserving resources from our cluster
         resources:
           requests:
-            cpu: 1
-            memory: 2Gi
+            #cpu: 1
+            #memory: 2Gi
         # env sets environment variables in the container
         # exactly like environment variables set from the command line
         env:
@@ -96,21 +96,21 @@ spec:
         - containerPort: 3306
         # attach our persistent disk
         volumeMounts:
-        - mountPath: /var/lib/mysql
+        - mountPath: /mnt/data
           # https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath
           # the volume's data directory is mapped to /var/lib/mysql in the pod
-          subPath: data
+          
           # refers to the volume named database
-          name: database
+          name: task-pv-volume
       # our spec requires a volume
       volumes:
       # the name assigned here is referenced by the container in volumeMounts: name
-      - name: database
+      - name: task-pv-volume
         persistentVolumeClaim:
           # refers to the PersistentVolumeClaim named database
           # this expects a PersistentVolumeClaim volume to exist already
           # with correct permissions for this cluster
-          claimName: database
+          claimName: task-pv-claim
 
 ---
 # expose a pod on mysql.default.svc.cluster.local to the rest of the cluster
